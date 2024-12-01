@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UsersRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -36,6 +38,26 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private ?\DateTimeImmutable $date_creation = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Journal $Journal = null;
+
+
+    /**
+     * @var Collection<int, Notify>
+     */
+    #[ORM\OneToMany(targetEntity: Notify::class, mappedBy: 'user')]
+    private Collection $notify;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?MoonNotification $notifymoon = null;
+
+    public function __construct()
+    {
+        $this->notify = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -132,6 +154,61 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDateCreation(\DateTimeImmutable $date_creation): static
     {
         $this->date_creation = $date_creation;
+
+        return $this;
+    }
+
+    public function getJournal(): ?Journal
+    {
+        return $this->Journal;
+    }
+
+    public function setJournal(Journal $Journal): static
+    {
+        $this->Journal = $Journal;
+
+        return $this;
+    }
+
+
+    /**
+     * @return Collection<int, Notify>
+     */
+    public function getNotify(): Collection
+    {
+        return $this->notify;
+    }
+
+    public function addNotify(Notify $notify): static
+    {
+        if (!$this->notify->contains($notify)) {
+            $this->notify->add($notify);
+            $notify->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotify(Notify $notify): static
+    {
+        if ($this->notify->removeElement($notify)) {
+            // set the owning side to null (unless already changed)
+            if ($notify->getUser() === $this) {
+                $notify->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getNotifymoon(): ?MoonNotification
+    {
+        return $this->notifymoon;
+    }
+
+    public function setNotifymoon(MoonNotification $notifymoon): static
+    {
+        $this->notifymoon = $notifymoon;
 
         return $this;
     }
