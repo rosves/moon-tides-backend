@@ -20,6 +20,10 @@ class Journal
     #[ORM\Column(type: Types::TEXT)]
     private ?string $note_entry = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $belongs = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +49,18 @@ class Journal
     public function setNoteEntry(string $note_entry): static
     {
         $this->note_entry = $note_entry;
+
+        return $this;
+    }
+
+    public function getBelongs(): ?Users
+    {
+        return $this->belongs;
+    }
+
+    public function setBelongs(?Users $belongs): static
+    {
+        $this->belongs = $belongs;
 
         return $this;
     }
