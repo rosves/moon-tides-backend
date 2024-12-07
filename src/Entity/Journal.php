@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: JournalRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Journal
 {
     #[ORM\Id]
@@ -17,12 +18,10 @@ class Journal
     #[ORM\Column]
     private ?\DateTimeImmutable $add_date = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+
+    #[ORM\Column(type: Types::TEXT , nullable:true)]
     private ?string $note_entry = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Users $belongs = null;
 
     public function getId(): ?int
     {
@@ -34,9 +33,10 @@ class Journal
         return $this->add_date;
     }
 
-    public function setAddDate(\DateTimeImmutable $add_date): static
+    #[ORM\PrePersist]
+    public function setAddDate()
     {
-        $this->add_date = $add_date;
+        $this->add_date = new \DateTimeImmutable();
 
         return $this;
     }
@@ -49,18 +49,6 @@ class Journal
     public function setNoteEntry(string $note_entry): static
     {
         $this->note_entry = $note_entry;
-
-        return $this;
-    }
-
-    public function getBelongs(): ?Users
-    {
-        return $this->belongs;
-    }
-
-    public function setBelongs(?Users $belongs): static
-    {
-        $this->belongs = $belongs;
 
         return $this;
     }

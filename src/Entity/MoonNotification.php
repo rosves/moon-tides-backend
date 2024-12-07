@@ -6,6 +6,7 @@ use App\Repository\MoonNotificationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MoonNotificationRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class MoonNotification
 {
     #[ORM\Id]
@@ -24,6 +25,15 @@ class MoonNotification
 
     #[ORM\Column]
     private ?bool $moon_eclipse_notify = null;
+
+    #[ORM\PrePersist]
+    public function setDefaultValue(){
+        $this -> full_moon_notify = false;
+        $this -> new_moon_notify = false;
+        $this -> solar_eclipse_notify = false;
+        $this -> moon_eclipse_notify = false;
+
+    }
 
     public function getId(): ?int
     {

@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class Users implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -41,7 +42,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Journal $Journal = null;
+    private ?Journal $journal = null;
 
 
     /**
@@ -158,21 +159,22 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->date_creation;
     }
 
-    public function setDateCreation(\DateTimeImmutable $date_creation): static
+    #[ORM\PrePersist]
+    public function setDateCreation()
     {
-        $this->date_creation = $date_creation;
+        $this->date_creation = new \DateTimeImmutable();
 
         return $this;
     }
 
     public function getJournal(): ?Journal
     {
-        return $this->Journal;
+        return $this->journal;
     }
 
     public function setJournal(Journal $Journal): static
     {
-        $this->Journal = $Journal;
+        $this->journal = $Journal;
 
         return $this;
     }
