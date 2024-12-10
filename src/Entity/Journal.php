@@ -3,11 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\JournalRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: JournalRepository::class)]
-#[ORM\HasLifecycleCallbacks]
+
 class Journal
 {
     #[ORM\Id]
@@ -15,12 +17,17 @@ class Journal
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $add_date = null;
+    /**
+     * @var Collection<int, NoteEntries>
+     */
+    #[ORM\OneToMany(targetEntity: NoteEntries::class, mappedBy: 'CreateNote')]
+    private Collection $CreateNote;
 
+    public function __construct()
+    {
+        $this->CreateNote = new ArrayCollection();
+    }
 
-    #[ORM\Column(type: Types::TEXT , nullable:true)]
-    private ?string $note_entry = null;
 
 
     public function getId(): ?int
@@ -28,28 +35,37 @@ class Journal
         return $this->id;
     }
 
-    public function getAddDate(): ?\DateTimeImmutable
+    /**
+     * @return Collection<int, NoteEntries>
+     */
+    public function getCreateNote(): Collection
     {
-        return $this->add_date;
+        return $this->CreateNote;
     }
 
-    #[ORM\PrePersist]
-    public function setAddDate()
+    public function addCreateNote(NoteEntries $createNote): static
     {
-        $this->add_date = new \DateTimeImmutable();
+        if (!$this->CreateNote->contains($createNote)) {
+            $this->CreateNote->add($createNote);
+            $createNote->setCreateNote($this);
+        }
 
         return $this;
     }
 
-    public function getNoteEntry(): ?string
+    public function removeCreateNote(NoteEntries $createNote): static
     {
-        return $this->note_entry;
-    }
-
-    public function setNoteEntry(string $note_entry): static
-    {
-        $this->note_entry = $note_entry;
+        if ($this->CreateNote->removeElement($createNote)) {
+            // set the owning side to null (unless already changed)
+            if ($createNote->getCreateNote() === $this) {
+                $createNote->setCreateNote(null);
+            }
+        }
 
         return $this;
     }
+
+  
+
+
 }
