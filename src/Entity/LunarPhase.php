@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LunarPhaseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,6 +27,24 @@ class LunarPhase
 
     #[ORM\Column]
     private ?\DateTimeImmutable $end_date = null;
+
+    /**
+     * @var Collection<int, Ritual>
+     */
+    #[ORM\ManyToMany(targetEntity: Ritual::class)]
+    private Collection $Associate;
+
+    #[ORM\ManyToOne(inversedBy: 'lunarPhases')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Notify $notify = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $moon_sign = null;
+
+    public function __construct()
+    {
+        $this->Associate = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -75,6 +95,54 @@ class LunarPhase
     public function setEndDate(\DateTimeImmutable $end_date): static
     {
         $this->end_date = $end_date;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ritual>
+     */
+    public function getAssociate(): Collection
+    {
+        return $this->Associate;
+    }
+
+    public function addAssociate(Ritual $associate): static
+    {
+        if (!$this->Associate->contains($associate)) {
+            $this->Associate->add($associate);
+        }
+
+        return $this;
+    }
+
+    public function removeAssociate(Ritual $associate): static
+    {
+        $this->Associate->removeElement($associate);
+
+        return $this;
+    }
+
+    public function getNotify(): ?Notify
+    {
+        return $this->notify;
+    }
+
+    public function setNotify(?Notify $notify): static
+    {
+        $this->notify = $notify;
+
+        return $this;
+    }
+
+    public function getMoonSign(): ?string
+    {
+        return $this->moon_sign;
+    }
+
+    public function setMoonSign(string $moon_sign): static
+    {
+        $this->moon_sign = $moon_sign;
 
         return $this;
     }

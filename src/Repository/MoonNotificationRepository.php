@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\Notification;
+use App\Entity\MoonNotification;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Notification>
+ * @extends ServiceEntityRepository<MoonNotification>
  */
-class NotificationRepository extends ServiceEntityRepository
+class MoonNotificationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Notification::class);
+        parent::__construct($registry, MoonNotification::class);
     }
 
     //    /**
-    //     * @return Notification[] Returns an array of Notification objects
+    //     * @return MoonNotification[] Returns an array of MoonNotification objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('n')
-    //            ->andWhere('n.exampleField = :val')
+    //        return $this->createQueryBuilder('m')
+    //            ->andWhere('m.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('n.id', 'ASC')
+    //            ->orderBy('m.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Notification
+    //    public function findOneBySomeField($value): ?MoonNotification
     //    {
-    //        return $this->createQueryBuilder('n')
-    //            ->andWhere('n.exampleField = :val')
+    //        return $this->createQueryBuilder('m')
+    //            ->andWhere('m.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()
