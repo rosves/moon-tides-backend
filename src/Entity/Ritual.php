@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\RitualRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,15 +13,15 @@ class Ritual
     #[ORM\Id] // Cette annotation définit la propriété id comme la clé primaire de l'entité
     #[ORM\GeneratedValue] // Indique que la valeur de l'ID sera générée automatiquement
     #[ORM\Column] // Mappe la propriété sur une colonne dans la base de données
+    #[Groups('user:rituals')]
     private ?int $id = null; // Identifiant du rituel
 
     #[ORM\Column(length: 100)] // Définit une colonne pour le nom du rituel avec une longueur maximale de 100 caractères
+    #[Groups('user:rituals')]
     private ?string $ritual_name = null; // Nom du rituel
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)] // Colonne de type texte, permet d'ajouter une description longue pour le rituel (nullable signifie que ce champ peut être vide)
-    private ?string $description = null; // Description du rituel
-
     #[ORM\Column(length: 100, nullable: true)] // Colonne pour un lien URL associé au rituel, aussi nullable (peut être vide)
+    #[Groups('user:rituals')]
     private ?string $link = null; // Lien vers des ressources supplémentaires pour le rituel (facultatif)
 
     // Getter pour l'ID du rituel
@@ -39,20 +40,6 @@ class Ritual
     public function setRitualName(string $ritual_name): static
     {
         $this->ritual_name = $ritual_name;
-
-        return $this;
-    }
-
-    // Getter pour la description du rituel
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    // Setter pour la description du rituel
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
 
         return $this;
     }

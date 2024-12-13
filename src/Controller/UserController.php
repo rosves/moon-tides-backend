@@ -4,7 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Users;
 use App\Entity\Journal;
+use App\Entity\LunarPhase;
 use App\Entity\MoonNotification;
+use App\Repository\LunarPhaseRepository;
+use App\Repository\RitualRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class UserController extends AbstractController
 { 
@@ -71,4 +75,35 @@ class UserController extends AbstractController
         return new JsonResponse(['message' => 'Utilisateur inscrit avec succès', 'token' => $token], 201);
     }
 
+    // Route pour déconnecter un utilisateur
+    #[Route('/api/logout', name: 'user_logout', methods: ['POST'])]
+    public function logout(): JsonResponse
+    {
+        // Informer le client de supprimer ou d'invalider le token JWT côté client
+        // La déconnexion est effectuée par le client en supprimant le token localement
+        return new JsonResponse(['message' => 'Déconnecté avec succès. Supprimez votre token localement.'], 200);
+    }
+
+    #[Route('/api/calendar', name: 'lunar_calendar', methods: ['GET'])]
+
+    public function Calendar(
+        LunarPhaseRepository $LunarPhases,
+        RitualRepository $Ritual,
+        SerializerInterface $serializerInterface
+    ): JsonResponse
+    {
+       
+
+        $calendar = $LunarPhases ->findAll();
+        $rituals = $Ritual ->findAll();
+
+        $serializedLunar = $serializerInterface->serialize($calendar, "json", ["groups" => ["user:lunarphase"]]);
+        $serializedRitual = $serializerInterface->serialize($rituals, "json", ["groups" => ["user:rituals"]]);
+
+
+
+        return new JsonResponse(['rituals' => json_decode($serializedRitual), 'lunar' => json_decode($serializedLunar)], 200);
+        
+
+    }
 }
