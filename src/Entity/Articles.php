@@ -7,22 +7,27 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Serializer\Annotation\Groups;
+#[ORM\HasLifecycleCallbacks] // Cette annotation permet l'utilisation de callbacks de cycle de vie, par exemple pour définir la date de création de l'utilisateur avant qu'il ne soit enregistré.
 #[ORM\Entity(repositoryClass: ArticlesRepository::class)] // Déclare cette classe comme une entité et spécifie le repository associé
 class Articles
 {
     #[ORM\Id] // Spécifie que ce champ est la clé primaire de l'entité
     #[ORM\GeneratedValue] // Spécifie que la valeur de l'ID est générée automatiquement
     #[ORM\Column] // Déclare une colonne dans la base de données
+    #[Groups('user:articles')]
     private ?int $id = null; // Propriété ID de l'entité Articles
 
     #[ORM\Column(length: 100)] // Déclare une colonne de type string avec une longueur maximale de 100 caractères
+    #[Groups('user:articles')]
     private ?string $title = null; // Propriété du titre de l'article
 
     #[ORM\Column(type: Types::TEXT)] // Déclare une colonne de type texte pour le contenu de l'article
+    #[Groups('user:articles')]
     private ?string $content = null; // Propriété du contenu de l'article
 
     #[ORM\Column] // Déclare une colonne de type date pour la date de publication
+    #[Groups('user:articles')]
     private ?\DateTimeImmutable $publication_date = null; // Propriété de la date de publication
 
     /**
@@ -76,11 +81,12 @@ class Articles
     {
         return $this->publication_date;
     }
-
+    
+    #[ORM\PrePersist]
     // Setter pour la date de publication de l'article
-    public function setPublicationDate(\DateTimeImmutable $publication_date): static
+    public function setPublicationDate(): static
     {
-        $this->publication_date = $publication_date;
+        $this->publication_date = new \DateTimeImmutable();
 
         return $this;
     }

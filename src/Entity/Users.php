@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: UsersRepository::class)] // Cette annotation indique que cette classe est une entité Doctrine et que la classe UsersRepository gère les accès aux données.
 #[ORM\HasLifecycleCallbacks] // Cette annotation permet l'utilisation de callbacks de cycle de vie, par exemple pour définir la date de création de l'utilisateur avant qu'il ne soit enregistré.
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])] // Cette contrainte assure que l'email de l'utilisateur est unique dans la base de données.
@@ -17,15 +17,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id] // Cette annotation marque l'attribut id comme clé primaire de l'entité.
     #[ORM\GeneratedValue] // Cette annotation indique que la valeur de l'id sera générée automatiquement par la base de données.
     #[ORM\Column] // Cette annotation indique que cet attribut sera mappé sur une colonne dans la base de données.
+    #[Groups('user:users')]
     private ?int $id = null; // L'identifiant unique de l'utilisateur.
 
     #[ORM\Column(length: 180)] // L'annotation définit une colonne de longueur 180 pour l'email de l'utilisateur.
+    #[Groups('user:users')]
     private ?string $email = null; // L'email de l'utilisateur. Il doit être unique dans la base de données.
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column] // Cette annotation indique que l'attribut sera mappé sur une colonne dans la base de données.
+    #[Groups('user:users')]
     private array $roles = []; // Rôle(s) de l'utilisateur (ex. 'ROLE_USER', 'ROLE_ADMIN').
 
     /**
@@ -35,6 +38,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null; // Le mot de passe haché de l'utilisateur.
 
     #[ORM\Column(length: 100)] // La colonne "username" a une longueur maximale de 100 caractères.
+    #[Groups('user:users')]
     private ?string $username = null; // Le nom d'utilisateur, souvent affiché comme alias de l'utilisateur.
 
     #[ORM\Column] // Déclare une colonne pour la date de création de l'utilisateur.
